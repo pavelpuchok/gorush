@@ -33,7 +33,7 @@ type LogPushEntry struct {
 
 var isTerm bool
 
-//nolint
+// nolint
 func init() {
 	isTerm = isatty.IsTerminal(os.Stdout.Fd())
 }
@@ -48,6 +48,8 @@ var (
 // InitLog use for initial log module
 func InitLog(accessLevel, accessLog, errorLevel, errorLog string) error {
 	var err error
+
+	LogError.SetReportCaller(true)
 
 	if !isTerm {
 		LogAccess.SetFormatter(&logrus.JSONFormatter{})
