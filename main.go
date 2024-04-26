@@ -375,7 +375,7 @@ func main() {
 	}
 
 	if cfg.Android.Enabled {
-		if _, err = notify.InitiFCMV1Client(g.ShutdownContext(), cfg); err != nil {
+		if _, err = notify.InitFCMV1Client(g.ShutdownContext(), cfg); err != nil {
 			logx.LogError.Fatal(err)
 		}
 	}

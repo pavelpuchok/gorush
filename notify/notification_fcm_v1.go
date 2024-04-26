@@ -3,6 +3,7 @@ package notify
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	firebase "firebase.google.com/go/v4"
@@ -20,10 +21,12 @@ const firebaseMessagingScope = "https://www.googleapis.com/auth/firebase.messagi
 
 var fcmV1Client *messaging.Client
 
-func InitiFCMV1Client(ctx context.Context, cfg *config.ConfYaml) (*messaging.Client, error) {
+func InitFCMV1Client(ctx context.Context, cfg *config.ConfYaml) (*messaging.Client, error) {
 	if fcmV1Client != nil {
 		return fcmV1Client, nil
 	}
+
+	fmt.Printf("InitFCMV1Client ProjectID: '%s'\n", cfg.Android.ProjectID)
 
 	f, err := firebase.NewApp(ctx,
 		&firebase.Config{
@@ -33,12 +36,12 @@ func InitiFCMV1Client(ctx context.Context, cfg *config.ConfYaml) (*messaging.Cli
 		option.WithScopes(firebaseMessagingScope),
 	)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("InitFCMV1Client: unable to create firebase app %w", err)
 	}
 
 	client, err := f.Messaging(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("InitFCMV1Client: unable to create messaging client %w", err)
 	}
 
 	fcmV1Client = client
@@ -64,7 +67,7 @@ func PushToAndroidV1(ctx context.Context, req *PushNotification, cfg *config.Con
 		return resp, err
 	}
 
-	client, err := InitiFCMV1Client(ctx, cfg)
+	client, err := InitFCMV1Client(ctx, cfg)
 	if err != nil {
 		// FCM server error
 		logx.LogError.Error("FCM V1 server error: " + err.Error())
