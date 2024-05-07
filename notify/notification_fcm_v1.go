@@ -173,7 +173,6 @@ func getAndroidNotificationV1(req *PushNotification) (*messaging.MulticastMessag
 
 	data := make(map[string]string, len(req.Data))
 	for k, val := range req.Data {
-
 		switch v := val.(type) {
 		case string:
 			data[k] = v
