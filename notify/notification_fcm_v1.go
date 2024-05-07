@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
 	"time"
 
 	firebase "firebase.google.com/go/v4"
@@ -172,12 +173,42 @@ func getAndroidNotificationV1(req *PushNotification) (*messaging.MulticastMessag
 
 	data := make(map[string]string, len(req.Data))
 	for k, val := range req.Data {
-		v, ok := val.(string)
-		if !ok {
-			logx.LogError.Errorf("FCM unsupported data value for key %s. value: %#v", k, val)
+
+		switch v := val.(type) {
+		case string:
+			data[k] = v
+
+		case int:
+			data[k] = strconv.FormatInt(int64(v), 10)
+		case int64:
+			data[k] = strconv.FormatInt(v, 10)
+		case int32:
+			data[k] = strconv.FormatInt(int64(v), 10)
+		case int16:
+			data[k] = strconv.FormatInt(int64(v), 10)
+		case int8:
+			data[k] = strconv.FormatInt(int64(v), 10)
+
+		case uint:
+			data[k] = strconv.FormatUint(uint64(v), 10)
+		case uint64:
+			data[k] = strconv.FormatUint(v, 10)
+		case uint32:
+			data[k] = strconv.FormatUint(uint64(v), 10)
+		case uint16:
+			data[k] = strconv.FormatUint(uint64(v), 10)
+		case uint8:
+			data[k] = strconv.FormatUint(uint64(v), 10)
+
+		case float32:
+			data[k] = strconv.FormatFloat(float64(v), 'f', -1, 64)
+		case float64:
+			data[k] = strconv.FormatFloat(float64(v), 'f', -1, 64)
+
+		default:
+			logx.LogError.Errorf("FCM unsupported data value for key %s. value: %#v of type %T", k, val, val)
 			return nil, errors.New("invalid data format")
 		}
-		data[k] = v
 	}
 
 	android := &messaging.AndroidConfig{
