@@ -49,6 +49,8 @@ var (
 func InitLog(accessLevel, accessLog, errorLevel, errorLog string) error {
 	var err error
 
+	LogError.SetReportCaller(true)
+
 	if !isTerm {
 		LogAccess.SetFormatter(&logrus.JSONFormatter{})
 		LogError.SetFormatter(&logrus.JSONFormatter{})
