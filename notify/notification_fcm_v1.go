@@ -174,6 +174,12 @@ func getAndroidNotificationV1(req *PushNotification) (*messaging.MulticastMessag
 	data := make(map[string]string, len(req.Data))
 	for k, val := range req.Data {
 		switch v := val.(type) {
+		case nil:
+			logx.LogError.Infof("getAndroidNotificationV1: skip payload field. key %s, value: %s", k, v)
+
+		case bool:
+			data[k] = strconv.FormatBool(v)
+
 		case string:
 			data[k] = v
 
